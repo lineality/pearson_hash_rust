@@ -1,5 +1,5 @@
 # pearson_hash_rust
-
+- matching instead of 'unwrap' for panic management in production
 
 ```rust
 /// Calculates the Pearson hash of a given input slice.
