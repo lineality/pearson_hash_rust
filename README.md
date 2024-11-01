@@ -308,6 +308,47 @@ mod tests {
 }
 
 
+/// Computes the Pearson hash of the input bytes
+/// 
+/// # Arguments
+/// 
+/// * `input` - A slice of bytes to hash
+/// 
+/// # Returns
+/// 
+/// * `Result<u8, std::io::Error>` - Returns the hash value on success, or an error if the input is invalid
+/// 
+/// # Example
+/// 
+/// ```
+/// match pearson_hash_base(b"Hello, World!") {
+///     Ok(hash) => println!("Hash: {}", hash),
+///     Err(e) => eprintln!("Error: {}", e),
+/// }
+/// ```
+pub fn pearson_hash_base8(input: &[u8]) -> Result<u8, std::io::Error> {
+    // Check if input is empty
+    if input.is_empty() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "Input cannot be empty"
+        ));
+    }
+
+    // Initialize hash to 0
+    let mut hash: u8 = 0;
+    
+    // For each byte in the input
+    for &byte in input {
+        // XOR the current byte with the hash, use result as index into permutation table
+        hash = PERMUTATION_TABLE[(hash ^ byte) as usize];
+    }
+    
+    Ok(hash)
+}
+
+
+
 fn main() -> Result<(), io::Error> {
 
     let input = "Hello, World is the first onasei".as_bytes();
@@ -340,7 +381,12 @@ fn main() -> Result<(), io::Error> {
     let hash = pearson_hash6(text.as_bytes());
     println!("pearson_hash6 Hash of '{}' is: {}", text, hash);
 
+    let text = "Hello, World is the first onasei";
+    match pearson_hash_base8(text.as_bytes()) {
+        Ok(hash) => println!("pearson_hash_base8 Hash of '{}' is: {}", text, hash),
+        Err(e) => eprintln!("Error computing hash: {}", e),
+    }
+
     Ok(())
 }
-
 ```
